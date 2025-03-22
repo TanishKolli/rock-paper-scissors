@@ -1,55 +1,62 @@
-console.log("Hello World!");
-function getComputerChoice()
-{
-    let num = Math.floor(Math.random()*3);
-    if(num===0)
-        return "rock";
-
-    else if(num===1)
-        return "paper";
-
-    else
-    return "scissors";
-}
-
-function getHumanChoice()
-{
-   let ans=  prompt("What do you pick?");
-   return ans;
-}
 
 let humanScore=0;
 let computerScore=0;
-function Playround(humanSelection,computerSelection)
+const buttons = document.querySelectorAll("input");
+const resultDisplay = document.getElementById("result");
+function computerPlay()
 {
-    console.log(`You chose: ${humanSelection}`);
-    console.log(`Computer chose: ${computerSelection}`);
-
-    if (humanSelection === computerSelection) {
-        console.log("It's a tie!");
-        return "tie";
-    } 
-    else if (
-        (humanSelection === "rock" && computerSelection === "scissors") ||
-        (humanSelection === "scissors" && computerSelection === "paper") ||
-        (humanSelection === "paper" && computerSelection === "rock")
-    ) {
-        humanScore++;
-        console.log("You win this round!");
-        return "human";
-    } 
-    else {
-        computerScore++;
-        console.log("Computer wins this round!");
-        return "computer";
-    }  
-
+    let choices=["rock","paper","scissors"];
+    return choices[Math.floor(Math.random()*choices.length)];
 }
-let humanSelection = getHumanChoice();
-let computerSelection = getComputerChoice();
-for(let i=0;i<5;i++){
-    let humanSelection = getHumanChoice();
-    let computerSelection = getComputerChoice();
-    Playround(humanSelection,computerSelection);
-    console.log(`Score - You: ${humanScore}, Computer: ${computerScore}`);
+
+function disableButtons()
+{
+    buttons.forEach(button=>{button.disabled=true});
 }
+
+function playRound(humanSelection) {
+        let computerSelection= computerPlay();
+        let result = "";
+        
+        if (humanSelection === computerSelection) {
+            result = `It's a tie. You both chose ${humanSelection}.
+            \n\nPlayer score: ${humanScore} \nComputer score: ${computerScore}`;
+        } 
+        else if (
+            (humanSelection === "rock" && computerSelection === "scissors") ||
+            (humanSelection === "scissors" && computerSelection === "paper") ||
+            (humanSelection === "paper" && computerSelection === "rock")
+        ) {
+            humanScore++;
+            result = `You win! ${humanSelection} beats ${computerSelection}.
+            \n\nPlayer score: ${humanScore} \nComputer score: ${computerScore}`;
+            
+            if (humanScore === 5) {
+                result += `\n\n🎉 You won the game! Reload the page to play again.`;
+            disableButtons();
+            }
+        } 
+        else {
+            computerScore++;
+            result = `You lose! ${computerSelection} beats ${humanSelection}.
+            \n\nPlayer score: ${humanScore} \nComputer score: ${computerScore}`;
+            
+            if (computerScore === 5) {
+                result += `\n\n😢 I won the game! Reload the page to play again.`;
+                disableButtons();
+            }
+        } 
+        resultDisplay.innerText = `${result} \n\nPlayer: ${humanScore} | Computer: ${computerScore}`;
+        if (humanScore === 5) {
+            resultDisplay.innerText += "\n🎉 You won the game! Reload the page to play again.";
+            disableButtons();
+        } else if (computerScore === 5) {
+            resultDisplay.innerText += "\n😢 Computer won! Reload the page to play again.";
+            disableButtons();
+        }
+}
+buttons.forEach(button =>{
+    button.addEventListener("click", function(){
+        playRound(button.value)
+    })
+})
